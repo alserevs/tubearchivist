@@ -145,14 +145,18 @@ class ThumbManager:
         }
         if img_url:
             try:
-                response = requests.get(img_url, stream=True)
-            except ConnectionError:
-                sleep(5)
-                response = requests.get(img_url, stream=True)
-            if not response.ok and not response.status_code == 404:
-                print("retry thumbnail download for " + img_url)
-                sleep(5)
-                response = requests.get(img_url, stream=True)
+                try:
+                    response = requests.get(img_url, stream=True)
+                except ConnectionError:
+                    sleep(5)
+                    response = requests.get(img_url, stream=True)
+                if not response.ok and not response.status_code == 404:
+                    print("retry thumbnail download for " + img_url)
+                    sleep(5)
+                    response = requests.get(img_url, stream=True)
+            except Exception:
+                print(f'ERROR: unable to get image {img_url}')
+                response = False
         else:
             response = False
         if not response or response.status_code == 404:
